@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+pytest = "*"
+pocoui = "*"
+allure-pytest = "*"
+pytest-rerunfailures = "*"
+airtest = "*"
+pyyaml = "*"
+tenacity = "~=5.0.3"
+
+[requires]
+python_version = "3.6"

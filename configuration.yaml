@@ -1,0 +1,13 @@
+android_debug_app_localPath: /Users/ninebot/PycharmProjects/Pytest_Allure_Airtest_Demo/data/app-debug.apk
+android_release_app_localPath: demo
+app_branch: Debug
+app_name: com.app.demo
+app_version: '1.0'
+client_ip: 127.0.0.1
+client_platform: Android
+client_port: '5037'
+client_reinstall: 'true'
+ios_debug_app_localPath: demo
+ios_release_app_localPath: demo
+phones:
+- T7G5T15519000886
