@@ -41,6 +41,7 @@
 
 ## Jenkins中查看Allure Report:
 ![](/img/Xnip2019-05-09_17-22-23.jpg)
+![](/img/Xnip2019-05-09_17-55-35.jpg)
 ![](/img/Xnip2019-05-09_17-07-08.jpg)
 ![](/img/Xnip2019-05-09_17-08-34.jpg)
 
