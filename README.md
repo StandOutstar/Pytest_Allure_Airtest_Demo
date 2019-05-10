@@ -1,5 +1,8 @@
 # Sample for Automated UI Test of Apps. 
-
+![](/img/Xnip2019-05-10_11-00-55.jpg)
+![](/img/Xnip2019-05-10_11-14-51.jpg)
+![](/img/Xnip2019-05-10_11-03-28.jpg)
+![](/img/Xnip2019-05-10_11-06-46.jpg)
 ## 使用以下优秀工具: 
 - pipenv
 - pytest
@@ -49,3 +52,12 @@
 - 深入学习编程技术
 - 深入学习 自动化测试技术
 - 深入学习 Pytest, Allure, Airtest 等框架
+
+
+Todo:
+- 丰富功能
+  - 重试连接设备
+  - 异常捕获
+  - wait exists, click
+  - 绑定 wait exists, click
+  - 截图到Excel中
