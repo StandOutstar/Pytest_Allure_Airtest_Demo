@@ -1,5 +1,7 @@
 
 from collections import namedtuple
+from functools import wraps
+
 import allure
 import pytest
 import yaml
@@ -8,6 +10,8 @@ from airtest.core.api import *
 from airtest.core.helper import device_platform, ST
 
 # 导入 common 包之前先设置 ST.PROJECT_ROOT，因为 using 依赖此路径
+from src.utils.function import generate_random_num_str
+
 ST.PROJECT_ROOT = os.environ['PROJECT_SPACE_ROOT']
 
 using("src/common.air")
@@ -74,3 +78,38 @@ def app_fixture(request):
     request.addfinalizer(teardown_test)  # 注册teardown, 这样即使setup出现异常，也可以最终调用到
 
     return app
+
+
+allure_results_dir = os.path.join(ST.PROJECT_ROOT, 'allure-results')
+
+
+def catch_error(func):
+    """
+    装饰器，获取cases异常，进行截图并attach, 将log传入allure
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        result = None
+        try:
+            result = func(*args, **kwargs)
+        except Exception as e:
+            file_name = '{}.png'.format(generate_random_num_str())
+            file_path = os.path.join(allure_results_dir, file_name)
+            device().snapshot(file_path)
+            sleep(0.5)  # 避免截图操作慢时找不到图片
+            if os.getenv('client_platform') == IOS_PLATFORM:
+                allure.attach.file(file_path,
+                                   name="current orientation {} and screen shot".format(device().orientation),
+                                   attachment_type=allure.attachment_type.PNG)
+            elif os.getenv('client_platform') == ANDROID_PLATFORM:
+                allure.attach.file(file_path,
+                                   name="current orientation {} and screen shot".format(
+                                       device().display_info['orientation']),
+                                   attachment_type=allure.attachment_type.PNG)
+            logger.exception("Catch Exception\n")
+            raise e
+        return result
+
+    wrapper.__name__ = 'catch_error'
+    return wrapper
