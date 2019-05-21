@@ -38,6 +38,7 @@ class TestDemo(object):
         return app_ins
 
     @allure.severity(allure.severity_level.BLOCKER)
+    @catch_error
     def test_home_to_second(self, app):
         """
         测试home to second
