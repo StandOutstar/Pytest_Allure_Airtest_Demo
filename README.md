@@ -57,7 +57,6 @@
 Todo:
 - 丰富功能
   - 重试连接设备
-  - 异常捕获
   - wait exists, click
   - 绑定 wait exists, click
   - 截图到Excel中
