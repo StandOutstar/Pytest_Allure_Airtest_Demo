@@ -59,7 +59,10 @@
 
 Todo:
 - 丰富功能
-  - 重试连接设备
-  - wait exists, click
-  - 绑定 wait exists, click
-  - 截图到Excel中
+  - [x] 异常捕获并截屏
+  - [x] wait exists, click
+  - [x] 绑定 wait exists, click
+  - [ ] 重试连接设备
+  - [ ] 截图到Excel中
+- 重构
+  - [x] 动态获取页面

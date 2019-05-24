@@ -3,6 +3,8 @@ import allure
 import pytest
 from airtest.core.api import *
 
+from cases.conftest import catch_error
+
 logger = logging.getLogger(__name__)
 epic = os.getenv('client_platform')
 feature = 'app'

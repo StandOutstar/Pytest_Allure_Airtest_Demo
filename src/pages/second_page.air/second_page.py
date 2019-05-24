@@ -14,7 +14,7 @@ class SecondPage(BasePage):
 
     @allure.step("检测是否为Second页面")
     def is_second_page(self):
-        if self.p_title.exists():
+        if self.p_title.wait_exists():
             self.logger.info("检测到控件：{}".format(self.p_title))
             return True
         else:
@@ -23,11 +23,11 @@ class SecondPage(BasePage):
 
     @allure.step("点击返回")
     def click_back(self):
-        if self.p_btn_back.exists():
+        if self.p_btn_back.wait_exists():
             self.logger.info("检测到控件：{}".format(self.p_title))
         else:
             self.logger.info("未检测到控件：{}".format(self.p_title))
-        self.p_btn_back.click()
+        self.p_btn_back.wait_click()
 
 
 class AndroidSecondPage(SecondPage):

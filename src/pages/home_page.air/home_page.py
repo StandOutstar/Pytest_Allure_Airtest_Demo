@@ -14,7 +14,7 @@ class HomePage(BasePage):
 
     @allure.step("检测是否为Home页面")
     def is_home_page(self):
-        if self.p_title.exists():
+        if self.p_title.wait_exists():
             self.logger.info("检测到控件：{}".format(self.p_title))
             return True
         else:
@@ -23,11 +23,11 @@ class HomePage(BasePage):
 
     @allure.step("点击下一步")
     def click_next(self):
-        if self.p_btn_next.exists():
+        if self.p_btn_next.wait_exists():
             self.logger.info("检测到控件：{}".format(self.p_title))
         else:
             self.logger.info("未检测到控件：{}".format(self.p_title))
-        self.p_btn_next.click()
+        self.p_btn_next.wait_click()
 
 
 class AndroidHomePage(HomePage):
