@@ -15,7 +15,7 @@ from src.utils.function import generate_random_num_str
 ST.PROJECT_ROOT = os.environ['PROJECT_SPACE_ROOT']
 
 using("src/common.air")
-from common import TestAPP
+from common import AndroidApp, IOSApp
 
 ANDROID_PLATFORM = "Android"
 IOS_PLATFORM = "iOS"
@@ -57,7 +57,19 @@ def app_fixture(request):
         ST.THRESHOLD_STRICT = 0.6
         client_platform = os.getenv('client_platform')
 
-        app = TestAPP(Phone(client_platform, phone_ip, phone_port, request.param, app_name))
+        try:
+            app = None
+            if client_platform == ANDROID_PLATFORM:
+                app = AndroidApp(Phone(client_platform, phone_ip, phone_port, request.param, app_name))
+            elif client_platform == IOS_PLATFORM:
+                app = IOSApp(Phone(client_platform, phone_ip, phone_port, request.param, app_name))
+
+        except Exception as e:
+            logger.error("create app fail: {}".format(e))
+            allure.attach(body='',
+                          name="create app fail: {}".format(e),
+                          attachment_type=allure.attachment_type.TEXT)
+            pytest.exit("create app fail: {}".format(e))
 
         assert (app is not None)
 
