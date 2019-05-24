@@ -1,5 +1,6 @@
 # Sample for Automated UI Test of Apps. 
 ![](/img/Xnip2019-05-10_11-00-55.jpg)
+![](/img/Xnip2019-05-24_18-14-10.jpg)
 ![](/img/Xnip2019-05-10_11-14-51.jpg)
 ![](/img/Xnip2019-05-10_11-03-28.jpg)
 ![](/img/Xnip2019-05-10_11-06-46.jpg)
@@ -26,7 +27,7 @@
 - 使用 airtest 来操作APP页面
 - 使用 allure 来记录信息和生成报告
 - 采用 PageObject 组织页面，以复用代码和后期维护
-- 使用魔法方法 __ __getattribute__ __ 实现简化控件获取使用
+- 使用魔法方法 __ __getattribute__ __ 实现简化控件获取使用和动态获取页面对象
 - 使用 命令行工具 cfgutil 来管理 iOS APP
 
 ## 运行配置：
