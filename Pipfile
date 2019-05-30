@@ -13,6 +13,7 @@ pytest-rerunfailures = "*"
 airtest = "*"
 pyyaml = "*"
 tenacity = "~=5.0.3"
+xlsxwriter = "*"
 
 [requires]
 python_version = "3.6"

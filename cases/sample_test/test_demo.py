@@ -16,7 +16,7 @@ story = 'all'
 @allure.story(story)
 class TestDemo(object):
     @pytest.fixture(scope="function")
-    def app(self, request, app_fixture):
+    def app(self, request, app_fixture, snapshot_writer):
         app_ins = app_fixture
 
         @allure.step
@@ -24,6 +24,9 @@ class TestDemo(object):
             """
             用例前置
             """
+            # 创建sheet，不存在会创建，已存在就切换为当前sheet，默认sheet 为 default，
+            snapshot_writer.add_worksheet(feature)
+
             app_ins.start_phone_app()
             sleep(2)
 
@@ -41,7 +44,7 @@ class TestDemo(object):
 
     @allure.severity(allure.severity_level.BLOCKER)
     @catch_error
-    def test_home_to_second(self, app):
+    def test_home_to_second(self, app, snapshot_writer):
         """
         测试home to second
         """
@@ -49,6 +52,10 @@ class TestDemo(object):
         sleep(2)
         assert app.second_page.is_second_page(), "确认进入second页失败"
 
+        snapshot_writer.snapshot_to_excel("second页")
+
         app.second_page.click_back()
         sleep(2)
         assert app.home_page.is_home_page(), "确认退出到home页失败"
+
+        snapshot_writer.snapshot_to_excel("home页")
