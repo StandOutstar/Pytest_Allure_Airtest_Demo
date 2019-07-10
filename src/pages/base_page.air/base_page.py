@@ -2,7 +2,12 @@ import logging
 import types
 
 import allure
+from tenacity import Retrying, stop_after_attempt, wait_fixed, RetryError, retry_if_result, retry_if_exception_type
+
+from airtest.core.api import touch, ST
+from airtest.core.cv import loop_find
 from poco.exceptions import PocoTargetTimeout
+from airtest.core.error import TargetNotFoundError
 
 Logger = logging.getLogger(__name__)
 
@@ -45,6 +50,8 @@ class BasePage(object):
 
         elif attr.startswith('a_'):  # template img 属性前缀 a 用以区别 poco 属性
             _template = _dict[attr]
+            _template.retry_air_touch = types.MethodType(retry_air_touch, _template)
+            _template.retry_air_exists = types.MethodType(retry_air_exists, _template)
             return _template
 
         # 非特殊属性直接返回
@@ -72,6 +79,12 @@ class BasePage(object):
 
 @allure.step("等待点击控件, 参数：")
 def wait_click(self, timeout=5, **kwargs):
+    """
+    等待点击控件
+    :param self:
+    :param timeout: 等待时长
+    :param kwargs:
+    """
     try:
         self.wait_for_appearance(timeout=timeout)
         self.click(**kwargs)
@@ -89,6 +102,12 @@ def wait_click(self, timeout=5, **kwargs):
 
 @allure.step("等待检测控件, 参数：")
 def wait_exists(self, timeout=5):
+    """
+    等待检测控件
+    :param self:
+    :param timeout: 等待时长
+    :return:
+    """
     try:
         self.wait_for_appearance(timeout=timeout)
         if self.exists():
@@ -109,3 +128,108 @@ def wait_exists(self, timeout=5):
                       name="poco not find {}".format(self),
                       attachment_type=allure.attachment_type.TEXT)
         return False
+
+
+@allure.step("重试间隔操作打印数据")
+def my_before_sleep(retry_state):
+    log_level = logging.DEBUG
+    logging.log(
+        log_level,
+        'Retrying %s: attempt %s ended with: %s',
+        retry_state.fn,
+        retry_state.attempt_number,
+        retry_state.outcome,
+    )
+
+
+@allure.step("重试点击图像, 参数：")
+def retry_air_touch(self, whether_retry=True, sleeps=2, max_attempts=2, **kwargs):
+    """
+    可重试 touch
+    Args:
+        self: img Template
+        whether_retry: whether to retry
+        sleeps: time between retry
+        max_attempts: max retry times
+    """
+    with allure.step("点击UI图像: {}".format(str(self))):
+
+        if not whether_retry:
+            max_attempts = 1
+
+        r = Retrying(retry=retry_if_exception_type(TargetNotFoundError),
+                     wait=wait_fixed(sleeps),
+                     stop=stop_after_attempt(max_attempts),
+                     before_sleep=my_before_sleep,
+                     reraise=True)
+
+        res = None
+        try:
+            res = r(touch, self, **kwargs)
+        except Exception as e:
+            res = False
+            raise e
+        finally:
+            logging.info("aircv touch img result: {} on size: {}".format(False if res is False else res, G.DEVICE.get_current_resolution()))
+            logging.debug("retry aircv touch statistics: {}".format(str(r.statistics)))
+            allure.attach.file(self.filepath,
+                               name="aircv touch img result: {}, on size: {}".format(False if res is False else res, G.DEVICE.get_current_resolution()),
+                               attachment_type=allure.attachment_type.PNG)
+
+
+@allure.step("重试检测图像, 参数：")
+def retry_air_exists(self, whether_retry=True, sleeps=1.5, max_attempts=3, threshold=None):
+    """
+    可重试 exists
+    Args:
+        threshold:
+        self: Img Template
+        whether_retry: whether to retry
+        sleeps: time between retry
+        max_attempts: max retry times
+
+    Returns: pos or False
+
+    """
+    with allure.step("检测UI图像: {}".format(str(self))):
+        if not whether_retry:
+            max_attempts = 1
+
+        def retry_exists():
+            try:
+                logging.debug("img template threshold: {}".format(self.threshold))
+                pos = loop_find(self, timeout=ST.FIND_TIMEOUT_TMP, threshold=threshold)
+            except TargetNotFoundError:
+                return False
+            else:
+                return pos
+
+        def need_retry(value):
+            """
+            value为False时需要重试
+            Args:
+                value: function的返回值，自动填入
+
+            Returns:
+
+            """
+            logging.debug("need retry aircv exists?: {}".format(value is False))
+            return value is False
+
+        r = Retrying(retry=retry_if_result(need_retry),
+                     stop=stop_after_attempt(max_attempts),
+                     wait=wait_fixed(sleeps),
+                     before_sleep=my_before_sleep)
+        res = None
+        try:
+            res = r(r, retry_exists)
+        except RetryError:
+            res = False
+        finally:
+            logging.info("aircv find {}: {}".format(str(self), False if res is False else res))
+            logging.debug("retry aircv exists statistics: {}".format(str(r.statistics)))
+            allure.attach.file(self.filepath,
+                               name="aircv find img result: {}, img:".format(False if res is False else res),
+                               attachment_type=allure.attachment_type.PNG)
+            return res
+
