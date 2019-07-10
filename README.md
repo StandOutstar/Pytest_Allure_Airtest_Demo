@@ -47,8 +47,8 @@
 - [Jenkins示例参数化配置](/img/Xnip2019-05-09_17-01-37.jpg)
 
 ## Jenkins中查看Allure Report:
+![](/img/Xnip2019-07-10_19-40-53.jpg)
 ![](/img/Xnip2019-05-09_17-22-23.jpg)
-![](/img/Xnip2019-05-09_17-55-35.jpg)
 ![](/img/Xnip2019-05-09_17-07-08.jpg)
 ![](/img/Xnip2019-05-09_17-08-34.jpg)
 

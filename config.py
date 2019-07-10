@@ -72,6 +72,7 @@ def get_parametr(client_info):
         'client_ip': os.environ["Client_IP"].strip(),
         'client_port': os.environ["Client_Port"].strip(),
         'client_reinstall': os.environ["Client_ReInstall"].strip(),
+        'app_name': os.environ["APP_Name"].strip(),
         'app_branch': os.environ["APP_Branch"].strip(),
         'phones': os.environ["Phones"].strip().split(','),
         'android_debug_app_localPath': os.environ["Android_Debug_APP_LocalPath"].strip(),
