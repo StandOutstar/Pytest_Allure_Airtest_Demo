@@ -5,6 +5,8 @@ import allure
 from airtest.core.api import *
 from poco.drivers.android.uiautomation import AndroidUiautomationPoco
 from poco.drivers.ios import iosPoco
+from tenacity import Retrying, wait_fixed, stop_after_attempt
+from wda import WDAError
 
 ANDROID_PLATFORM = "Android"
 IOS_PLATFORM = "iOS"
@@ -95,7 +97,7 @@ class AndroidApp(App):
     @allure.step('初始化驱动')
     def init_driver(self):
         # 创建设备驱动
-        self.device_phone = connect_device("android://{0}:{1}/{2}".format(
+        self.device_phone = my_retry_connect("android://{0}:{1}/{2}".format(
             self.phone_ip, self.phone_port, self.phone_uuid))
         self.phone_dev = self.phone_uuid
         self.poco_phone_driver = AndroidUiautomationPoco(self.device_phone, poll_interval=1)
@@ -124,7 +126,7 @@ class IOSApp(App):
     @allure.step('初始化驱动')
     def init_driver(self):
         # 创建设备驱动
-        self.device_phone = connect_device("ios:///http://{0}:{1}".format(self.phone_ip, self.phone_port))
+        self.device_phone = my_retry_connect("ios:///http://{0}:{1}".format(self.phone_ip, self.phone_port))
         self.phone_dev = "http://{0}:{1}".format(self.phone_ip, self.phone_port)
         self.poco_phone_driver = iosPoco(self.device_phone, poll_interval=1)
         # 关闭截图
@@ -134,3 +136,42 @@ class IOSApp(App):
     def set_system(self):
         pass
 
+
+def my_before_sleep(retry_state):
+    if retry_state.attempt_number < 1:
+        loglevel = logging.INFO
+    else:
+        loglevel = logging.WARNING
+
+    logging.log(
+        loglevel,
+        'Retrying %s: attempt %s ended with: %s',
+        retry_state.fn,
+        retry_state.attempt_number,
+        retry_state.outcome,
+    )
+
+
+def my_retry_connect(uri=None, whether_retry=True, sleeps=10, max_attempts=3):
+    """
+    可重试 connect
+    :param sleeps: 重试间隔时间
+    :param uri: device uri
+    :param whether_retry: not retry will set the max attempts to 1
+    :param max_attempts: max retry times
+    """
+    logger = logging.getLogger(__name__)
+
+    if not whether_retry:
+        max_attempts = 1
+
+    r = Retrying(wait=wait_fixed(sleeps), stop=stop_after_attempt(max_attempts), before_sleep=my_before_sleep, reraise=True)
+    try:
+        return r(connect_device, uri)
+    except Exception as e:
+        if isinstance(e, (WDAError,)):
+            logger.info("Can't connect iphone, please check device or wda state!")
+        logger.info("try connect device {} 3 times per wait 10 sec failed.".format(uri))
+        raise e
+    finally:
+        logger.info("retry connect statistics: {}".format(str(r.statistics)))

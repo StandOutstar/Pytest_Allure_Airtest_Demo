@@ -67,6 +67,7 @@ Todo:
   - [x] wait exists, click
   - [x] 绑定 wait exists, click
   - [x] 截图到Excel中
-  - [ ] 重试连接设备
+  - [x] 重试连接设备
+  - [x] 绑定可重试图像操作
 - 重构
   - [x] 动态获取页面
