@@ -13,6 +13,8 @@ Logger = logging.getLogger(__name__)
 
 
 class BasePage(object):
+    app_name = ''
+
     def __init__(self, poco_driver):
         self.__driver_poco = poco_driver
         self.logger = logging.getLogger(__name__)

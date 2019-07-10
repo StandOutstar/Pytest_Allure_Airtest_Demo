@@ -44,6 +44,9 @@ class App(object):
             page = import_module(attr)
             assert page is not None, f"未从pages目录下获取到指定页面：{attr}"
 
+            if attr == 'base_page':
+                return getattr(page, 'BasePage')
+
             if self.client_platform == ANDROID_PLATFORM:  # 判断平台
                 for item in page.__dict__:
                     if item.startswith(ANDROID_PAGE_PREFIX) and item.endswith(ANDROID_PAGE_SUFFIX):
