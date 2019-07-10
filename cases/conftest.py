@@ -44,6 +44,11 @@ app_name = config['app_name']
 test_phones = config['phones']
 
 
+@allure.step("尝试唤醒当前设备：")
+def wake_device(current_device):
+    current_device.wake()
+
+
 @pytest.fixture(params=test_phones, scope="session")
 def app_fixture(request):
     """
@@ -64,7 +69,7 @@ def app_fixture(request):
                 app = AndroidApp(Phone(client_platform, phone_ip, phone_port, request.param, app_name))
             elif client_platform == IOS_PLATFORM:
                 app = IOSApp(Phone(client_platform, phone_ip, phone_port, request.param, app_name))
-
+            app.base_page.app_name = app.app_name
         except Exception as e:
             logger.error("create app fail: {}".format(e))
             allure.attach(body='',
@@ -78,6 +83,8 @@ def app_fixture(request):
 
         logger.info("current test platform: {}".format(device_platform()))
         logger.info("start app {0} in {1}:{2}".format(app.app_name, client_platform, G.DEVICE.uuid))
+
+        wake_device(G.DEVICE)
 
     def teardown_test():
         """
