@@ -43,7 +43,7 @@
 - 示例中没有使用git仓库，可自行配置
 - 本地运行单个用例建议使用 pycharm，添加 pytest 并设置参数运行
 ![pycharm配置测试示例](/img/Xnip2019-05-08_14-33-11.jpg)
-![ycharm pytest 运行结果图](/img/Xnip2019-05-09_17-18-27.jpg)
+![Pycharm pytest 运行结果图](/img/Xnip2019-05-09_17-18-27.jpg)
 - [Jenkins示例参数化配置](/img/Xnip2019-05-09_17-01-37.jpg)
 
 ## Jenkins中查看Allure Report:
